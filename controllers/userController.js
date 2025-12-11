@@ -1,6 +1,7 @@
 const CommandLog = require('../models/CommandLog');
 const { processCommand } = require('../utils/ruleUtils');
 const User = require('../models/User');
+const Notification = require('../models/Notification'); // Import Notification model
 const { hashApiKey } = require('../utils/authUtils');
 
 // @desc    Submit a command for execution
@@ -104,9 +105,42 @@ const getProfile = async (req, res) => {
     }
 };
 
+// @desc    Get user notifications
+// @route   GET /api/commands/notifications
+// @access  Private
+const getNotifications = async (req, res) => {
+    try {
+        const notifications = await Notification.find({ user_id: req.user._id }).sort({ created_at: -1 });
+        res.status(200).json(notifications);
+    } catch (error) {
+        res.status(500).json({ message: 'Failed to fetch notifications' });
+    }
+};
+
+// @desc    Delete a notification
+// @route   DELETE /api/commands/notifications/:id
+// @access  Private
+const deleteNotification = async (req, res) => {
+    try {
+        const notification = await Notification.findOneAndDelete({ 
+            _id: req.params.id, 
+            user_id: req.user._id 
+        });
+
+        if (!notification) {
+            return res.status(404).json({ message: 'Notification not found' });
+        }
+
+        res.status(200).json({ message: 'Notification deleted' });
+    } catch (error) {
+        res.status(500).json({ message: 'Failed to delete notification' });
+    }
+};
 
 module.exports = {
     submitCommand,
     getCommandHistory,
     getProfile,
+    getNotifications,
+    deleteNotification
 };

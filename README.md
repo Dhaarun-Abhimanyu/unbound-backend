@@ -1,4 +1,8 @@
-# unbound-backend
+# Tether
+
+A secure Command Gateway API designed to manage, audit, and monetize remote shell command execution through a credit-based economy and regex-based firewall.
+
+**Hosted Backend URL:** [https://unbound-backend-jseh.onrender.com](https://unbound-backend-jseh.onrender.com)
 
 ## Command Gateway API Documentation
 
@@ -62,3 +66,12 @@ Endpoints for the admin dashboard to view system activity.
 | :--- | :--- | :--- | :--- | :--- |
 | `/api/admin/audit-logs` | `GET` | View global execution logs. Supports filtering. | Query: `?status=REJECTED` | `[{ "user": "bob", "cmd": "rm /", "status": "REJECTED" }]` |
 | `/api/admin/stats` | `GET` | System overview stats (total runs, total rejections). | N/A | `{ "total_commands": 500, "rejected": 12 }` |
+
+---
+
+## 6. Notifications (Member)
+Endpoints for users to receive updates on their command status (e.g., when an admin approves a pending command).
+
+| Route | Method | Description | Request Body | Response Example |
+| :--- | :--- | :--- | :--- | :--- |
+| `/api/commands/notifications` | `GET` | Get all notifications for the current user. | N/A | `[{ "_id": "notif_123", "type": "COMMAND_APPROVED", "message": "Your command has been approved.", "timestamp": "..." }]` |

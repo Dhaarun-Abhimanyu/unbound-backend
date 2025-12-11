@@ -3,9 +3,11 @@ const router = express.Router();
 const {
     submitCommand,
     getCommandHistory,
-    getProfile
-} = require('../controllers/userController'); // Fixed: changed commandController to userController
-const { protect } = require('../middlewares/authMiddleware'); // Fixed: changed auth to
+    getProfile,
+    getNotifications,
+    deleteNotification
+} = require('../controllers/userController');
+const { protect } = require('../middlewares/authMiddleware');
 
 // All routes in this file are protected
 //router.use(protect);
@@ -13,5 +15,9 @@ const { protect } = require('../middlewares/authMiddleware'); // Fixed: changed 
 router.post('/', protect, submitCommand);
 router.get('/history', protect, getCommandHistory);
 router.get('/profile', getProfile);
+
+// Notification routes
+router.get('/notifications', protect, getNotifications);
+router.delete('/notifications/:id', protect, deleteNotification);
 
 module.exports = router;

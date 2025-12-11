@@ -1,5 +1,6 @@
 const User = require('../models/User');
 const CommandLog = require('../models/CommandLog');
+const Notification = require('../models/Notification'); // Import Notification model
 const { generateApiKey, hashApiKey } = require('../utils/authUtils');
 
 // @desc    List all users
@@ -192,6 +193,14 @@ const processPendingCommand = async (req, res) => {
         if (action === 'REJECT') {
             commandLog.status = 'REJECTED';
             await commandLog.save();
+
+            // Create Notification for Rejection
+            await Notification.create({
+                user_id: commandLog.user_id._id,
+                message: `Your command "${commandLog.command_text}" was rejected by admin.`,
+                type: 'COMMAND_REJECTED'
+            });
+
             return res.status(200).json({ message: 'Command rejected', status: 'REJECTED' });
         }
 
@@ -213,6 +222,13 @@ const processPendingCommand = async (req, res) => {
 
         commandLog.status = 'EXECUTED';
         await commandLog.save();
+
+        // Create Notification for Approval
+        await Notification.create({
+            user_id: user._id,
+            message: `Your command "${commandLog.command_text}" was approved and executed.`,
+            type: 'COMMAND_APPROVED'
+        });
 
         res.status(200).json({ message: 'Command approved and executed', status: 'EXECUTED' });
 
