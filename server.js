@@ -15,6 +15,9 @@ app.get('/', (req, res) => {
     res.send('Hello, World!');
 });
 
+// Mount routers
+app.use('/api/commands', require('./routes/commandRoutes'));
+
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 });

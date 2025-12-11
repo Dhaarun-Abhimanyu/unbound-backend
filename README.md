@@ -2,6 +2,9 @@
 
 ## Command Gateway API Documentation
 
+## Database Schema
+![database schema](image.png)
+
 ## Authentication
 All requests must include the API Key in the headers to identify the user and their role.
 
@@ -15,7 +18,7 @@ These are the primary routes used by the CLI/Frontend to run commands.
 | Route | Method | Description | Request Body | Response Example |
 | :--- | :--- | :--- | :--- | :--- |
 | `/api/commands` | `POST` | **Submit a Command.** <br>1. Checks user credits.<br>2. Matches against Rules.<br>3. Mocks execution if accepted.<br>4. Deducts credits. | `{ "command": "ls -la" }` | `{ "status": "EXECUTED", "output": "...", "credits_remaining": 99 }` |
-| `/api/commands/history` | `GET` | Get the logged-in user's personal execution history. | N/A | `[{ "command": "ls", "status": "EXECUTED", "timestamp": "..." }]` |
+| `/api/commands/history` | `GET` | Get the logged-in user's personal audit log (command history). | N/A | `[{ "command": "ls", "status": "EXECUTED", "timestamp": "..." }]` |
 | `/api/profile` | `GET` | Get current user details and credit balance. | N/A | `{ "username": "alice", "credits": 50, "role": "MEMBER" }` |
 
 ---
@@ -31,7 +34,17 @@ Endpoints to manage the firewall rules (regex patterns).
 
 ---
 
-## 3. User Management (Admin Only)
+## 3. Command Approval (Admin Only)
+Endpoints for admins to manage commands that are pending approval.
+
+| Route | Method | Description | Request Body | Response Example |
+| :--- | :--- | :--- | :--- | :--- |
+| `/api/admin/pending-commands` | `GET` | List all commands awaiting admin approval. | N/A | `[{ "id": "cmd_123", "user": "charlie", "command": "sudo apt update", "requested_at": "..." }]` |
+| `/api/admin/pending-commands/{id}` | `POST` | Approve or reject a pending command. | `{ "action": "APPROVE" }` or `{ "action": "REJECT" }` | `{ "message": "Command approved", "status": "EXECUTED" }` |
+
+---
+
+## 4. User Management (Admin Only)
 Endpoints to onboard users and manage the credit economy.
 
 | Route | Method | Description | Request Body | Response Example |
@@ -42,7 +55,7 @@ Endpoints to onboard users and manage the credit economy.
 
 ---
 
-## 4. Audit & Monitoring (Admin Only)
+## 5. Audit & Monitoring (Admin Only)
 Endpoints for the admin dashboard to view system activity.
 
 | Route | Method | Description | Request Body | Response Example |
