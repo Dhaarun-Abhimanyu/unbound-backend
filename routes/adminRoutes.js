@@ -28,6 +28,6 @@ router.get('/admin/system-stats', getSystemStats);
 
 // Pending Commands
 router.get('/admin/pending-commands', getPendingCommands);
-router.post('/admin/pending-commands/:id/process', processPendingCommand);
+router.put('/admin/pending-commands/:id', processPendingCommand);
 
 module.exports = router;

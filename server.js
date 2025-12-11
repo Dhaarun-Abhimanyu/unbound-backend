@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors');
 const app = express();
 const connectDB = require('./config/db');
 const dotenv = require('dotenv');
@@ -11,6 +12,13 @@ if (process.env.NODE_ENV !== 'test') {
 }
 
 const PORT = process.env.PORT || 3000;
+
+// Configure CORS
+app.use(cors({
+    origin: process.env.FRONTEND_URL || '*', // Use env var or allow all
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'x-api-key']
+}));
 
 app.use(express.json());
 

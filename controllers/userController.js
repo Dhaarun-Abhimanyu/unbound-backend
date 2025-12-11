@@ -1,5 +1,7 @@
 const CommandLog = require('../models/CommandLog');
 const { processCommand } = require('../utils/ruleUtils');
+const User = require('../models/User');
+const { hashApiKey } = require('../utils/authUtils');
 
 // @desc    Submit a command for execution
 // @route   POST /api/commands
@@ -77,12 +79,29 @@ const getCommandHistory = async (req, res) => {
     }
 };
 
-// @desc    Get user profile
+// @desc    Get user profile (login by API key)
 // @route   GET /api/profile
 // @access  Private
-const getProfile = (req, res) => {
-    const { username, credits, role } = req.user;
-    res.status(200).json({ username, credits, role });
+const getProfile = async (req, res) => {
+    //console.log('Reached get profile');
+    const apiKey = req.headers['x-api-key'];
+    if (!apiKey) {
+        return res.status(401).json({ message: 'Unauthorized: API key is missing' });
+    }
+
+    try {
+        const hashed = hashApiKey(apiKey);
+        const user = await User.findOne({ api_key: hashed });
+
+        if (!user) {
+            return res.status(401).json({ message: 'Unauthorized: Invalid API key' });
+        }
+
+        const { username, credits, role } = user;
+        res.status(200).json({ username, credits, role });
+    } catch (err) {
+        res.status(500).json({ message: 'Server error fetching profile' });
+    }
 };
 
 

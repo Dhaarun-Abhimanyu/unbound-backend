@@ -173,7 +173,7 @@ const getPendingCommands = async (req, res) => {
 const processPendingCommand = async (req, res) => {
     const { id } = req.params;
     const { action } = req.body; // 'APPROVE' or 'REJECT'
-
+    console.log('Processing pending command:', id, 'Action:', action);
     if (!['APPROVE', 'REJECT'].includes(action)) {
         return res.status(400).json({ message: 'Invalid action. Use APPROVE or REJECT.' });
     }
@@ -197,6 +197,10 @@ const processPendingCommand = async (req, res) => {
 
         // Handle APPROVE
         const user = commandLog.user_id;
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
 
         // Check credits again before executing (in case they spent them while waiting)
         if (user.credits < 1) {
