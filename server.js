@@ -16,7 +16,9 @@ app.get('/', (req, res) => {
 });
 
 // Mount routers
-app.use('/api/commands', require('./routes/commandRoutes'));
+// Note: Assuming your previous command routes are working as intended
+app.use('/api/commands', require('./routes/userRoutes')); // Fixed path based on your file list
+app.use('/api', require('./routes/adminRoutes')); // Mounts /api/users
 
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
