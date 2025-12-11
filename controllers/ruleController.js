@@ -36,6 +36,15 @@ const createRule = async (req, res) => {
     }
 
     try {
+        // Check for exact duplicate pattern
+        const existingRule = await Rule.findOne({ pattern });
+        if (existingRule) {
+            return res.status(409).json({ 
+                message: 'Rule conflict: A rule with this exact pattern already exists.',
+                existing_rule_id: existingRule._id
+            });
+        }
+
         const rule = await Rule.create({
             pattern,
             action,
