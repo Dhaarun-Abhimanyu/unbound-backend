@@ -5,7 +5,9 @@ const {
     createUser, 
     updateUserCredits,
     getAuditLogs,
-    getSystemStats
+    getSystemStats,
+    getPendingCommands,
+    processPendingCommand
 } = require('../controllers/adminController');
 const { protect, admin } = require('../middlewares/authMiddleware');
 
@@ -19,9 +21,13 @@ router.post('/users', createUser);
 router.post('/users/:id/credits', updateUserCredits);
 
 // Audit Logs
-router.get('/audit-logs', getAuditLogs);
+router.get('/admin/audit-logs', getAuditLogs);
 
 // System Stats
-router.get('/system-stats', getSystemStats);
+router.get('/admin/system-stats', getSystemStats);
+
+// Pending Commands
+router.get('/admin/pending-commands', getPendingCommands);
+router.post('/admin/pending-commands/:id/process', processPendingCommand);
 
 module.exports = router;

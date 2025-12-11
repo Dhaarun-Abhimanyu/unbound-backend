@@ -4,8 +4,8 @@ const {
     submitCommand,
     getCommandHistory,
     getProfile
-} = require('../controllers/commandController');
-const { protect } = require('../middlewares/auth');
+} = require('../controllers/userController'); // Fixed: changed commandController to userController
+const { protect } = require('../middlewares/authMiddleware'); // Fixed: changed auth to
 
 // All routes in this file are protected
 router.use(protect);

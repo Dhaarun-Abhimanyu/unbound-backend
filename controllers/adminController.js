@@ -152,10 +152,77 @@ const getSystemStats = async (req, res) => {
     }
 };
 
+// @desc    List all commands awaiting admin approval
+// @route   GET /api/admin/pending-commands
+// @access  Admin
+const getPendingCommands = async (req, res) => {
+    try {
+        const pendingCommands = await CommandLog.find({ status: 'PENDING_APPROVAL' })
+            .populate('user_id', 'username role')
+            .sort({ executed_at: 1 }); // Oldest first
+
+        res.status(200).json(pendingCommands);
+    } catch (error) {
+        res.status(500).json({ message: 'Failed to fetch pending commands', error: error.message });
+    }
+};
+
+// @desc    Approve or reject a pending command
+// @route   POST /api/admin/pending-commands/:id
+// @access  Admin
+const processPendingCommand = async (req, res) => {
+    const { id } = req.params;
+    const { action } = req.body; // 'APPROVE' or 'REJECT'
+
+    if (!['APPROVE', 'REJECT'].includes(action)) {
+        return res.status(400).json({ message: 'Invalid action. Use APPROVE or REJECT.' });
+    }
+
+    try {
+        const commandLog = await CommandLog.findById(id).populate('user_id');
+
+        if (!commandLog) {
+            return res.status(404).json({ message: 'Command log not found' });
+        }
+
+        if (commandLog.status !== 'PENDING_APPROVAL') {
+            return res.status(400).json({ message: `Command is already ${commandLog.status}` });
+        }
+
+        if (action === 'REJECT') {
+            commandLog.status = 'REJECTED';
+            await commandLog.save();
+            return res.status(200).json({ message: 'Command rejected', status: 'REJECTED' });
+        }
+
+        // Handle APPROVE
+        const user = commandLog.user_id;
+
+        // Check credits again before executing (in case they spent them while waiting)
+        if (user.credits < 1) {
+             return res.status(400).json({ message: 'User has insufficient credits to execute this command now.' });
+        }
+
+        // Deduct credit
+        user.credits -= 1;
+        await user.save();
+
+        commandLog.status = 'EXECUTED';
+        await commandLog.save();
+
+        res.status(200).json({ message: 'Command approved and executed', status: 'EXECUTED' });
+
+    } catch (error) {
+        res.status(500).json({ message: 'Failed to process command', error: error.message });
+    }
+};
+
 module.exports = {
     getUsers,
     createUser,
     updateUserCredits,
     getAuditLogs,
-    getSystemStats
+    getSystemStats,
+    getPendingCommands,
+    processPendingCommand
 };

@@ -20,7 +20,9 @@ const submitCommand = async (req, res) => {
         });
     }
 
-    const outcome = processCommand(command);
+    // Await the async rule processing
+    const { outcome, matchedRuleId } = await processCommand(command);
+    
     let status;
     let output = '';
 
@@ -48,6 +50,7 @@ const submitCommand = async (req, res) => {
     try {
         await CommandLog.create({
             user_id: user._id,
+            matched_rule_id: matchedRuleId, // Save the rule that triggered this
             command_text: command,
             status: status,
         });

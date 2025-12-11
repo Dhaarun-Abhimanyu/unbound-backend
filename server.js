@@ -5,7 +5,10 @@ const dotenv = require('dotenv');
 require('dotenv').config();
 
 // Connect to the database
-connectDB();
+// Only connect if not in test mode to avoid connection errors during mocks
+if (process.env.NODE_ENV !== 'test') {
+    connectDB();
+}
 
 const PORT = process.env.PORT || 3000;
 
@@ -16,10 +19,15 @@ app.get('/', (req, res) => {
 });
 
 // Mount routers
-// Note: Assuming your previous command routes are working as intended
-app.use('/api/commands', require('./routes/userRoutes')); // Fixed path based on your file list
-app.use('/api', require('./routes/adminRoutes')); // Mounts /api/users
+app.use('/api/commands', require('./routes/userRoutes'));
+app.use('/api/rules', require('./routes/ruleRoutes'));
+app.use('/api', require('./routes/adminRoutes'));
 
-app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
-});
+// Only listen if this file is run directly
+if (require.main === module) {
+    app.listen(PORT, () => {
+        console.log(`Server is running on http://localhost:${PORT}`);
+    });
+}
+
+module.exports = app;
