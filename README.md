@@ -4,6 +4,28 @@ A secure Command Gateway API designed to manage, audit, and monetize remote shel
 
 **Hosted Backend URL:** [https://unbound-backend-jseh.onrender.com](https://unbound-backend-jseh.onrender.com)
 
+## Installation & Local Setup
+
+1. **Install Dependencies**
+   ```bash
+   npm install
+   ```
+
+2. **Environment Configuration**
+   Create a `.env` file in the root directory based on the provided example:
+   ```bash
+   cp .env.example .env
+   ```
+   Fill in your MongoDB URI and other variables in `.env`.
+
+3. **Run Development Server**
+   ```bash
+   npm run dev
+   ```
+   The server will start on `http://localhost:3000`.
+
+---
+
 ## Command Gateway API Documentation
 
 ## Database Schema
